@@ -1,0 +1,227 @@
+@import "tailwindcss";
+/* @import "tw-animate-css"; */
+
+@custom-variant dark (&:is(.dark *));
+
+:root {
+  /* Maglo Design System - Light Mode */
+  --primary: #c8ee44;
+  --primary-foreground: #1b212d;
+  --secondary: #f2994a;
+  --secondary-foreground: #fff1e5;
+  --success: #27ae60;
+  --success-bg: #d9ffe9;
+  --success-foreground: #27ae60;
+  --secondary-color: #29a073;
+  --secondary-color-bg: #eefef2;
+  --accent-purple: #5243aa;
+
+  --text-primary: #1b212d;
+  --text-secondary: #929eae;
+  --text-light: #f8f8f8;
+  --text-white: #ffffff;
+
+  /* shadcn/ui Default Colors - Light Mode */
+  --background: #ffffff;
+  --foreground: #1b212d;
+  --card: #ffffff;
+  --card-foreground: #1b212d;
+  --popover: #ffffff;
+  --popover-foreground: #1b212d;
+  --muted: #f3f4f6;
+  --muted-foreground: #929eae;
+  --accent: #c8ee44;
+  --accent-foreground: #1b212d;
+  --destructive: #ef4444;
+  --destructive-foreground: #ffffff;
+  --border: #e5e7eb;
+  --input: #f3f4f6;
+  --ring: #c8ee44;
+  --chart-1: #3b82f6;
+  --chart-2: #8b5cf6;
+  --chart-3: #ec4899;
+  --chart-4: #f59e0b;
+  --chart-5: #10b981;
+  --radius: 0.5rem;
+  --sidebar: #ffffff;
+  --sidebar-foreground: #1b212d;
+  --sidebar-primary: #c8ee44;
+  --sidebar-primary-foreground: #1b212d;
+  --sidebar-accent: #f3f4f6;
+  --sidebar-accent-foreground: #1b212d;
+  --sidebar-border: #e5e7eb;
+  --sidebar-ring: #c8ee44;
+}
+
+.dark {
+  /* Maglo Design System - Dark Mode */
+  --primary: #c8ee44;
+  --primary-foreground: #1b212d;
+  --secondary: #f2994a;
+  --secondary-foreground: #2d2419;
+  --success: #27ae60;
+  --success-bg: #1b3a2c;
+  --success-foreground: #27ae60;
+  --secondary-color: #29a073;
+  --secondary-color-bg: #1a3a2e;
+  --accent-purple: #5243aa;
+
+  --text-primary: #f8f8f8;
+  --text-secondary: #929eae;
+  --text-light: #f8f8f8;
+  --text-white: #ffffff;
+
+  /* shadcn/ui Default Colors - Dark Mode */
+  --background: #1b212d;
+  --foreground: #f8f8f8;
+  --card: #2a3142;
+  --card-foreground: #f8f8f8;
+  --popover: #2a3142;
+  --popover-foreground: #f8f8f8;
+  --muted: #3f4a63;
+  --muted-foreground: #929eae;
+  --accent: #c8ee44;
+  --accent-foreground: #1b212d;
+  --destructive: #f87171;
+  --destructive-foreground: #1b212d;
+  --border: #3f4a63;
+  --input: #3f4a63;
+  --ring: #c8ee44;
+  --chart-1: #c8ee44;
+  --chart-2: #60a5fa;
+  --chart-3: #a78bfa;
+  --chart-4: #f472b6;
+  --chart-5: #fbbf24;
+  --sidebar: #2a3142;
+  --sidebar-foreground: #f8f8f8;
+  --sidebar-primary: #c8ee44;
+  --sidebar-primary-foreground: #1b212d;
+  --sidebar-accent: #3f4a63;
+  --sidebar-accent-foreground: #f8f8f8;
+  --sidebar-border: #3f4a63;
+  --sidebar-ring: #c8ee44;
+}
+
+@theme inline {
+  --font-sans: "Kumbh Sans", system-ui, -apple-system, sans-serif;
+  --font-mono: system-ui, monospace;
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  html {
+    @apply scroll-smooth;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+  }
+
+  h1 {
+    @apply text-3xl font-semibold tracking-tight;
+  }
+
+  h2 {
+    @apply text-2xl font-semibold tracking-tight;
+  }
+
+  h3 {
+    @apply text-xl font-medium tracking-tight;
+  }
+
+  label {
+    @apply text-sm font-medium;
+  }
+
+  button {
+    @apply transition-colors;
+  }
+}
+
+@layer components {
+
+  /* Buttons */
+  .btn-primary {
+    @apply bg-primary text-primary-foreground hover:bg-primary/90 font-semibold py-2 px-4 rounded-md transition-colors;
+  }
+
+  .btn-secondary {
+    @apply bg-secondary/10 text-secondary hover:bg-secondary/20 font-semibold py-2 px-4 rounded-md transition-colors border border-secondary/20;
+  }
+
+  /* Cards */
+  .metric-card {
+    @apply rounded-lg border border-border bg-card text-card-foreground p-6 transition-all hover:shadow-lg;
+  }
+
+  .invoice-row {
+    @apply border-b border-border hover:bg-muted/50 transition-colors;
+  }
+
+  /* Form Elements */
+  .form-input {
+    @apply w-full px-4 py-2 rounded-md border border-border bg-input text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 transition-colors;
+  }
+
+  .form-label {
+    @apply block text-sm font-medium text-foreground mb-2;
+  }
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--background);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--muted);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--muted-foreground);
+}
