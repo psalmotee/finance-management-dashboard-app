@@ -11,7 +11,9 @@
     --font-sans: 'Kumbh Sans', sans-serif;
   }
 }
-
+button {
+  cursor: pointer;
+}
 /* -------------------------------------- */
 /* Light Mode Variables (Default) */
 /* -------------------------------------- */

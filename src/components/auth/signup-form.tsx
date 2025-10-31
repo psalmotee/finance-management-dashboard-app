@@ -17,14 +17,19 @@ import curveLine from "@/assets/icons/curve-line.svg";
 import Logo from "@/assets/images/Logo.png";
 import { authService } from "@/lib/auth-service";
 
-interface LoginFormProps {
-  onLoginSuccess: (name: string) => void;
-  onToggleSignup: () => void;
+interface SignupFormProps {
+  onSignupSuccess: (name: string) => void;
+  onToggleLogin: () => void;
 }
 
-export function LoginForm({ onLoginSuccess, onToggleSignup }: LoginFormProps) {
+export function SignupForm({
+  onSignupSuccess,
+  onToggleLogin,
+}: SignupFormProps) {
+  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -34,15 +39,25 @@ export function LoginForm({ onLoginSuccess, onToggleSignup }: LoginFormProps) {
     setLoading(true);
 
     try {
-      if (!email || !password) {
+      if (!name || !email || !password || !confirmPassword) {
         setError("Please fill in all fields");
         return;
       }
 
-      const user = await authService.login(email, password);
-      onLoginSuccess(user.name || email);
+      if (password !== confirmPassword) {
+        setError("Passwords do not match");
+        return;
+      }
+
+      if (password.length < 8) {
+        setError("Password must be at least 8 characters");
+        return;
+      }
+
+      await authService.signup(email, password, name);
+      onSignupSuccess(name);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Login failed");
+      setError(err instanceof Error ? err.message : "Signup failed");
     } finally {
       setLoading(false);
     }
@@ -56,12 +71,13 @@ export function LoginForm({ onLoginSuccess, onToggleSignup }: LoginFormProps) {
           <div className="mb-20">
             <Image src={Logo} alt="Logo" />
           </div>
+
           <Card className="">
             <CardHeader className="space-y-2 pb-6">
               <CardTitle className="text-3xl font-semibold">
-                Welcome back
+                Create new account
               </CardTitle>
-              <CardDescription className="text-md text-(--text-secondary)">
+              <CardDescription className="">
                 Welcome back! Please enter your details
               </CardDescription>
             </CardHeader>
@@ -73,58 +89,56 @@ export function LoginForm({ onLoginSuccess, onToggleSignup }: LoginFormProps) {
                   </div>
                 )}
                 <div className="space-y-2">
-                  <label className="text-sm font-medium">Email</label>
+                  <label className="text-sm font-medium">Full Name</label>
                   <Input
-                    type="email"
-                    placeholder="Enter your email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
+                    type="text"
+                    placeholder="Mehfuazul Nabil"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
                     disabled={loading}
+                    className=""
                   />
                 </div>
                 <div className="space-y-2">
-                  <label className="text-sm font-medium ">Password</label>
+                  <label className="text-sm font-medium">Email</label>
+                  <Input
+                    type="email"
+                    placeholder="example@email.com"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    disabled={loading}
+                    className=""
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">Password</label>
                   <Input
                     type="password"
                     placeholder="••••••••"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     disabled={loading}
+                    className=""
                   />
-                </div>
-                <div className="flex items-center justify-between text-sm">
-                  <label className="flex items-center gap-2 cursor-pointer">
-                    <input
-                      type="checkbox"
-                      className="rounded border-(-text-secondary)"
-                    />
-                    <span className="text-slate-700 dark:text-slate-400">
-                      Remember for 30 days
-                    </span>
-                  </label>
-                  <button
-                    type="button"
-                    className="text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
-                  >
-                    Forgot password
-                  </button>
                 </div>
                 <Button
                   type="submit"
                   disabled={loading}
-                  className="w-full h-11"
+                  className="w-full font-semibold h-11"
                 >
-                  {loading ? "Signing in..." : "Sign in"}
+                  {loading ? "Creating account..." : "Create Account"}
                 </Button>
               </form>
-              <p className="text-center text-sm text-(--text-secondary) mt-6">
-                Don&apos;t have an account?{" "}
+              <p className="text-center text-smtext-sm text-(--text-secondary) mt-6">
+                Already have an account?{" "}
                 <button
-                  onClick={onToggleSignup}
+                  onClick={onToggleLogin}
                   className="text-(--primary-fg) font-semibold"
                 >
-                  Sign up for free
-                  <span><Image src={curveLine} alt="Clock and hand" /></span>
+                  Sign in
+                  <span>
+                    <Image src={curveLine} alt="Clock and hand" width={50} />
+                  </span>
                 </button>
               </p>
             </CardContent>
