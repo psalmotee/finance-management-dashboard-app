@@ -22,7 +22,7 @@ export default function Home() {
           setCurrentUser(user.name || user.email)
         }
       } catch (error) {
-        console.log("[v0] No authenticated user")
+        console.log(" No authenticated user")
       } finally {
         setMounted(true)
         setLoading(false)

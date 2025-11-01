@@ -1,85 +1,178 @@
 @import "tailwindcss";
-/* src/app/globals.css (Tailwind CSS v4 compatible) */
 
-/* -------------------------------------- */
-/* Font Family Definition */
-/* -------------------------------------- */
+@custom-variant dark (&:is(.dark *));
+
+:root {
+  /* Maglo Design System - Light Mode */
+  --primary-color: #c8ee44;
+  --dark-shade: #1E1C30;
+  --secondary-color: #29A073;
+  --tertiary-color: #5243AA;
+
+  /* Card invoice */
+  --key-dark: #363A3F;
+  --dark-2: #4e5257;
+
+  --gray-2: #F8F8F8;
+  --gray-3: #F5F5F5;
+  --gray-5: #EBE8E8;
+
+  /* status */
+  --pending-bg: #FFF4E5;
+  --pending-text: #F2994A;
+  --paid-bg: #D9FFE9;
+  --paid-text: #27AE60;
+  --unpaid-bg:#FFEFEF;
+  --unpaid-text: #EB5757;
+
+  --secondary-foreground: #fff1e5;
+  --success: #27ae60;
+  --success-bg: #d9ffe9;
+  --success-foreground: #27ae60;
+  --secondary-color: #29a073;
+  --secondary-color-bg: #eefef2;
+  --accent-purple: #5243aa;
+
+  --text-white: #ffffff;
+  --text-color-1: #1B212D;
+  --text-color-2: #929eae;
+
+
+  --text-color-3: #f8f8f8;
+  --text-color-4: #ffffff;
+}
+
+.dark {
+  /* Maglo Design System - Dark Mode */
+  --primary-color: #c8ee44;
+  --primary-foreground: #1b212d;
+  --tertiary: #929EAE;
+  --secondary: #f2994a;
+  --secondary-foreground: #2d2419;
+  --success: #27ae60;
+  --success-bg: #1b3a2c;
+  --success-foreground: #27ae60;
+  --secondary-color: #29a073;
+  --secondary-color-bg: #1a3a2e;
+  --accent-purple: #5243aa;
+
+  --text-primary: #f8f8f8;
+  --text-secondary: #929eae;
+  --text-light: #f8f8f8;
+  --text-white: #ffffff;
+}
+
+@theme inline {
+  --font-sans: "Kumbh Sans", system-ui, -apple-system, sans-serif;
+  --font-mono: system-ui, monospace;
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+}
+
 @layer base {
+  * {
+    @apply border-border;
+  }
 
-  /* Set the default font-family */
-  :root {
-    --font-sans: 'Kumbh Sans', sans-serif;
+  html {
+    @apply scroll-smooth;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+  }
+
+  h1 {
+    @apply text-3xl font-semibold tracking-tight;
+  }
+
+  h2 {
+    @apply text-2xl font-semibold tracking-tight;
+  }
+
+  h3 {
+    @apply text-xl font-medium tracking-tight;
+  }
+
+  label {
+    @apply text-sm font-medium;
+  }
+
+  button {
+    @apply transition-colors;
   }
 }
-button {
-  cursor: pointer;
-}
-/* -------------------------------------- */
-/* Light Mode Variables (Default) */
-/* -------------------------------------- */
-:root {
-  /* Text Colors */
-  --text-primary: #1B212D;
-  --text-secondary: #929EAE;
-  --text-tertiary: #C8EE44;
-  --text-inverse: #FFFFFF;
 
-  /* Primary Button/Accent */
-  --primary-bg: #C8EE44;
-  --primary-fg: #1B212D;
+@layer components {
 
-  /* Warning Status */
-  --warning-bg: #FFF1E5;
-  /* Light Orange Background */
-  --warning-fg: #F2994A;
-  /* Dark Orange Text */
+  Buttons
+  /* .btn-primary {
+    @apply bg-primary text-primary-foreground hover:bg-primary/90 font-semibold py-2 px-4 rounded-md transition-colors;
+  } */
 
-  /* Success Status */
-  --success-bg: #D9FFE9;
-  /* Light Green Background */
-  --success-fg: #27AE60;
-  /* Dark Green Text */
+  /* .btn-secondary {
+    @apply bg-secondary/10 text-secondary hover:bg-secondary/20 font-semibold py-2 px-4 rounded-md transition-colors border border-secondary/20;
+  } */
 
-  /* Secondary Button/Accent */
-  --secondary-bg: #EEFEF2;
-  --secondary-fg: #29A073;
+  /* Cards */
+  .metric-card {
+    @apply rounded-lg border border-border bg-card text-card-foreground p-6 transition-all hover:shadow-lg;
+  }
 
-  /* Dot/Accent Color */
-  --dot-color-1: #C8EE44;
-  --dot-color-2: #5243AA;
+  .invoice-row {
+    @apply border-b border-border hover:bg-muted/50 transition-colors;
+  }
+
+  /* Form Elements */
+  .form-input {
+    @apply w-full px-4 py-2 rounded-md border border-border bg-input text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 transition-colors;
+  }
+
+  .form-label {
+    @apply block text-sm font-medium text-foreground mb-2;
+  }
 }
 
-/* -------------------------------------- */
-/* Dark Mode Variables */
-/* -------------------------------------- */
-.dark {
-  /* Text Colors (Inverted/Adapted) */
-  --text-primary: #F8F8F8;
-  --text-secondary: #929EAE;
-  --text-inverse: #1B212D;
-
-  /* Primary Button/Accent (Remains high contrast) */
-  --primary-bg: #C8EE44;
-  --primary-fg: #1B212D;
-
-  /* Warning Status (Inverted BG/FG for dark mode) */
-  --warning-bg: #F2994A;
-  /* Dark Orange Background */
-  --warning-fg: #FFF1E5;
-  /* Light Orange Text */
-
-  /* Success Status (Inverted BG/FG for dark mode) */
-  --success-bg: #27AE60;
-  /* Dark Green Background */
-  --success-fg: #D9FFE9;
-  /* Light Green Text */
-
-  /* Secondary Button/Accent (Inverted BG/FG) */
-  --secondary-bg: #29A073;
-  --secondary-fg: #EEFEF2;
-
-  /* Dot/Accent Color (No change needed) */
-  --dot-color-1: #C8EE44;
-  --dot-color-2: #5243AA;
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
 }
 
+::-webkit-scrollbar-track {
+  background: var(--background);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--muted);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--muted-foreground);
+}

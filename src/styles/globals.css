@@ -225,3 +225,100 @@
 ::-webkit-scrollbar-thumb:hover {
   background: var(--muted-foreground);
 }
+
+
+
+@import "tailwindcss";
+/* src/app/globals.css (Tailwind CSS v4 compatible) */
+
+/* -------------------------------------- */
+/* Font Family Definition */
+/* -------------------------------------- */
+@layer base {
+
+  /* Set the default font-family */
+  :root {
+    --font-sans: 'Kumbh Sans', sans-serif;
+  }
+}
+
+button {
+  cursor: pointer;
+}
+
+/* -------------------------------------- */
+/* Light Mode Variables (Default) */
+/* -------------------------------------- */
+:root {
+  /* Text Colors */
+  --text-primary: #1B212D;
+  --text-secondary: #929EAE;
+  --text-tertiary: #C8EE44;
+  --text-inverse: #FFFFFF;
+
+  /* Primary Button/Accent */
+  --primary-bg: #C8EE44;
+  --primary-fg: #1B212D;
+
+  /* Warning Status */
+  --warning-bg: #FFF1E5;
+  /* Light Orange Background */
+  --warning-fg: #F2994A;
+  /* Dark Orange Text */
+
+  /* Success Status */
+  --success-bg: #D9FFE9;
+  /* Light Green Background */
+  --success-fg: #27AE60;
+  /* Dark Green Text */
+
+  /* Secondary Button/Accent */
+  --secondary-bg: #EEFEF2;
+  --secondary-fg: #29A073;
+
+  --bg-gray-light: #F8F8F8;
+
+
+  /* Dot/Accent Color */
+  --dot-color-1: #27AE60;
+  --dot-color-2: #C8EE44;
+  --dot-color-3: #5243AA;
+
+  /* Line Chart Color */
+  --line-chart-color: #E2E8F0;
+  --tooltip-color: #FFF4FE;
+}
+
+/* -------------------------------------- */
+/* Dark Mode Variables */
+/* -------------------------------------- */
+.dark {
+  /* Text Colors (Inverted/Adapted) */
+  --text-primary: #F8F8F8;
+  --text-secondary: #929EAE;
+  --text-inverse: #1B212D;
+
+  /* Primary Button/Accent (Remains high contrast) */
+  --primary-bg: #C8EE44;
+  --primary-fg: #1B212D;
+
+  /* Warning Status (Inverted BG/FG for dark mode) */
+  --warning-bg: #F2994A;
+  /* Dark Orange Background */
+  --warning-fg: #FFF1E5;
+  /* Light Orange Text */
+
+  /* Success Status (Inverted BG/FG for dark mode) */
+  --success-bg: #27AE60;
+  /* Dark Green Background */
+  --success-fg: #D9FFE9;
+  /* Light Green Text */
+
+  /* Secondary Button/Accent (Inverted BG/FG) */
+  --secondary-bg: #29A073;
+  --secondary-fg: #EEFEF2;
+
+  /* Dot/Accent Color (No change needed) */
+  --dot-color-1: #C8EE44;
+  --dot-color-2: #5243AA;
+}
