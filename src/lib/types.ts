@@ -7,5 +7,6 @@ export interface Invoice {
   vatAmount: number
   total: number
   dueDate: string
-  status: "paid" | "unpaid"
+  createdAt: string
+  status: "paid" | "unpaid" | "pending"
 }
