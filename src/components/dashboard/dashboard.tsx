@@ -54,7 +54,7 @@ export function Dashboard({ currentUser, onLogout }: DashboardProps) {
                                text-(--text-color-2) hover:text-(--text-color-1) 
                             "
                 >
-                  <Search size={20} />
+                  <Search size={18} />
                 </div>
                 {/* Bell Icon with inline styling */}
                 <div

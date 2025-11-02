@@ -22,7 +22,7 @@ export function RecentInvoices({ invoices }: RecentInvoicesProps) {
   };
 
   return (
-    <div className="">
+    <div className="mt-12">
       <div className="pb-4 flex flex-row items-center justify-between">
         <h3 className="text-lg font-semibold text-(--text-color-1)">
           Recent Invoice
@@ -65,7 +65,7 @@ export function RecentInvoices({ invoices }: RecentInvoicesProps) {
                 recentInvoices.map((invoice, index) => (
                   <tr
                     key={invoice.id}
-                    className="border-b border-(--gray-3) hover:bg-(--gray-5) transition-colors"
+                    className="border-b border-(--gray-3) hover:bg-(--gray-5) rounded-2xl transition-colors"
                   >
                     <td className="px-4 py-4">
                       <div className="flex items-center gap-3">
@@ -97,7 +97,7 @@ export function RecentInvoices({ invoices }: RecentInvoicesProps) {
                       </span>
                     </td>
                     <td className="px-4 py-4 text-(--text-color-1) text-sm font-medium">
-                      2D
+                      20
                     </td>
                     <td className="px-4 py-4 text-slate-900 dark:text-white font-medium">
                       ₦

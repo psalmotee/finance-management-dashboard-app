@@ -144,9 +144,9 @@
     @apply rounded-lg border border-border bg-card text-card-foreground p-6 transition-all hover:shadow-lg;
   }
 
-  .invoice-row {
+  /* .invoice-row {
     @apply border-b border-border hover:bg-muted/50 transition-colors;
-  }
+  } */
 
   /* Form Elements */
   .form-input {
