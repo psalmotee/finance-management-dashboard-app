@@ -28,7 +28,7 @@ export function RecentInvoices({ invoices }: RecentInvoicesProps) {
           Recent Invoice
         </h3>
         <Link
-          href="/invoices"
+          href="#invoice-manager"
           className="flex items-center justify-center text-sm font-semibold text-(--secondary-color) hover:text-(--secondary-color)/80"
         >
           View All

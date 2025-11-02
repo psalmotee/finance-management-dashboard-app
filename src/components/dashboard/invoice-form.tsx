@@ -15,16 +15,19 @@ import { BookText } from "lucide-react";
 
 interface InvoiceFormProps {
   onSubmit: (invoice: Omit<Invoice, "id">) => void;
-  initialData?: Invoice;
-  triggerLabel?: string;
+  initialData?: Invoice | null;
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
 }
 
 export function InvoiceForm({
   onSubmit,
   initialData,
-  triggerLabel = "Create Invoice",
+  open,
+  onOpenChange,
 }: InvoiceFormProps) {
-  const [open, setOpen] = useState(false);
+  const isEditing = !!initialData;
+
   const [formData, setFormData] = useState({
     clientName: "",
     clientEmail: "",
@@ -44,6 +47,15 @@ export function InvoiceForm({
         dueDate: initialData.dueDate,
         status: initialData.status,
       });
+    } else {
+      setFormData({
+        clientName: "",
+        clientEmail: "",
+        amount: 0,
+        vatPercentage: 0,
+        dueDate: "",
+        status: "unpaid",
+      });
     }
   }, [initialData]);
 
@@ -62,163 +74,119 @@ export function InvoiceForm({
       dueDate: formData.dueDate,
       status: formData.status,
     });
-    setOpen(false); // close dialog after submit
+    onOpenChange(false);
   };
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogTrigger asChild>
-        <Button className="bg-(--primary-color) hover:bg-(--primary-color)/90 text-(--text-color-1) font-semibold px-6 py-5">
+        <Button
+          className="bg-(--primary-color) hover:bg-(--primary-color)/90 text-(--text-color-1) font-semibold px-6 py-5"
+          onClick={() => {
+            onOpenChange(true);
+          }}
+        >
           <BookText size={14} className="mr-2" />
-          {initialData ? "Edit Invoice" : triggerLabel}
+          Create Invoice
         </Button>
       </DialogTrigger>
 
       <DialogContent className="max-w-2xl bg-slate-800 border-slate-700 overflow-y-auto max-h-[90vh]">
         <DialogHeader>
           <DialogTitle className="text-white">
-            {initialData ? "Edit Invoice" : "Create New Invoice"}
+            {isEditing ? "Edit Invoice" : "Create New Invoice"}
           </DialogTitle>
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="space-y-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <label className="text-sm font-semibold text-slate-300">
-                Client Name
-              </label>
-              <Input
-                type="text"
-                placeholder="John Doe"
-                value={formData.clientName}
-                onChange={(e) =>
-                  setFormData({ ...formData, clientName: e.target.value })
-                }
-                required
-                className="bg-slate-700 border-slate-600 text-white"
-              />
-            </div>
-
-            <div className="space-y-2">
-              <label className="text-sm font-semibold text-slate-300">
-                Client Email
-              </label>
-              <Input
-                type="email"
-                placeholder="john@example.com"
-                value={formData.clientEmail}
-                onChange={(e) =>
-                  setFormData({ ...formData, clientEmail: e.target.value })
-                }
-                required
-                className="bg-slate-700 border-slate-600 text-white"
-              />
-            </div>
+          {/* Client Name */}
+          <div>
+            <label className="text-sm text-gray-300">Client Name</label>
+            <Input
+              type="text"
+              value={formData.clientName}
+              onChange={(e) =>
+                setFormData({ ...formData, clientName: e.target.value })
+              }
+              className="bg-slate-900 text-white"
+              required
+            />
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="space-y-2">
-              <label className="text-sm font-semibold text-slate-300">
-                Amount (₦)
-              </label>
-              <Input
-                type="number"
-                placeholder="0.00"
-                value={formData.amount || ""}
-                onChange={(e) =>
-                  setFormData({
-                    ...formData,
-                    amount: Number.parseFloat(e.target.value) || 0,
-                  })
-                }
-                step="0.01"
-                required
-                className="bg-slate-700 border-slate-600 text-white"
-              />
-            </div>
-
-            <div className="space-y-2">
-              <label className="text-sm font-semibold text-slate-300">
-                VAT (%)
-              </label>
-              <Input
-                type="number"
-                placeholder="0"
-                value={formData.vatPercentage || ""}
-                onChange={(e) =>
-                  setFormData({
-                    ...formData,
-                    vatPercentage: Number.parseFloat(e.target.value) || 0,
-                  })
-                }
-                step="0.01"
-                required
-                className="bg-slate-700 border-slate-600 text-white"
-              />
-            </div>
-
-            <div className="space-y-2">
-              <label className="text-sm font-semibold text-slate-300">
-                Due Date
-              </label>
-              <Input
-                type="date"
-                value={formData.dueDate}
-                onChange={(e) =>
-                  setFormData({ ...formData, dueDate: e.target.value })
-                }
-                required
-                className="bg-slate-700 border-slate-600 text-white"
-              />
-            </div>
+          {/* Client Email */}
+          <div>
+            <label className="text-sm text-gray-300">Client Email</label>
+            <Input
+              type="email"
+              value={formData.clientEmail}
+              onChange={(e) =>
+                setFormData({ ...formData, clientEmail: e.target.value })
+              }
+              className="bg-slate-900 text-white"
+              required
+            />
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-6 bg-slate-700/50 rounded-lg border border-slate-600">
-            <div>
-              <p className="text-xs font-semibold text-slate-400 mb-2 uppercase">
-                VAT Amount
-              </p>
-              <p className="text-2xl font-bold text-emerald-400">
-                ₦
-                {vatAmount.toLocaleString("en-NG", {
-                  minimumFractionDigits: 2,
-                })}
-              </p>
-            </div>
-            <div>
-              <p className="text-xs font-semibold text-slate-400 mb-2 uppercase">
-                Total
-              </p>
-              <p className="text-2xl font-bold text-blue-400">
-                ₦{total.toLocaleString("en-NG", { minimumFractionDigits: 2 })}
-              </p>
-            </div>
-            <div>
-              <p className="text-xs font-semibold text-slate-400 mb-2 uppercase">
-                Status
-              </p>
-              <select
-                value={formData.status}
-                onChange={(e) =>
-                  setFormData({
-                    ...formData,
-                    status: e.target.value as "paid" | "unpaid",
-                  })
-                }
-                className="w-full px-3 py-2 bg-slate-600 border border-slate-500 rounded-md text-white text-sm"
-              >
-                <option value="unpaid">Unpaid</option>
-                <option value="paid">Paid</option>
-              </select>
-            </div>
+          {/* Amount */}
+          <div>
+            <label className="text-sm text-gray-300">Amount</label>
+            <Input
+              type="number"
+              value={formData.amount}
+              onChange={(e) =>
+                setFormData({
+                  ...formData,
+                  amount: parseFloat(e.target.value) || 0,
+                })
+              }
+              className="bg-slate-900 text-white"
+              required
+            />
           </div>
 
-          <div className="flex gap-2 justify-end pt-4">
+          {/* VAT Percentage */}
+          <div>
+            <label className="text-sm text-gray-300">VAT (%)</label>
+            <Input
+              type="number"
+              value={formData.vatPercentage}
+              onChange={(e) =>
+                setFormData({
+                  ...formData,
+                  vatPercentage: parseFloat(e.target.value) || 0,
+                })
+              }
+              className="bg-slate-900 text-white"
+            />
+          </div>
+
+          {/* Due Date */}
+          <div>
+            <label className="text-sm text-gray-300">Due Date</label>
+            <Input
+              type="date"
+              value={formData.dueDate}
+              onChange={(e) =>
+                setFormData({ ...formData, dueDate: e.target.value })
+              }
+              className="bg-slate-900 text-white"
+            />
+          </div>
+
+          {/* Summary */}
+          <div className="flex justify-between text-gray-300">
+            <p>VAT Amount: ₦{vatAmount.toFixed(2)}</p>
+            <p className="font-semibold text-white">
+              Total: ₦{total.toFixed(2)}
+            </p>
+          </div>
+
+          <div className="flex justify-end pt-4">
             <Button
               type="submit"
               className="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6"
             >
-              {initialData ? "Update Invoice" : "Create Invoice"}
+              {isEditing ? "Update Invoice" : "Create Invoice"}
             </Button>
           </div>
         </form>

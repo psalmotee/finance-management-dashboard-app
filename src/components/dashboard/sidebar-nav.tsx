@@ -70,7 +70,7 @@ export function SidebarNavigation({
       label: "Settings",
       icon: <Settings className="w-5 h-5" />,
     },
-    { id: "help", label: "Help", icon: <HelpCircle className="w-5 h-5" /> }, // New help item
+    { id: "help", label: "Help", icon: <HelpCircle className="w-5 h-5" /> },
   ];
 
   const handleNavClick = (
@@ -82,7 +82,7 @@ export function SidebarNavigation({
       | "settings"
       | "help"
   ) => {
-    onTabChange(tab as any); // Type assertion for simplicity
+    onTabChange(tab as any);
     if (isMobile) {
       setIsDrawerOpen(false);
     }
