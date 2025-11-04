@@ -124,9 +124,13 @@ export default function LoginForm({ onLoginSuccess, onToggleSignup }: LoginFormP
                   className="text-(--text-color-1) hover:text-(--text-color-1)/80 cursor-pointer font-semibold"
                 >
                   Sign up for free
+<<<<<<< HEAD
                   <span>
                     <Image src={curveLine} alt="curve line" />
                   </span>
+=======
+                  <span><Image src={curveLine} alt="curve line" /></span>
+>>>>>>> 1dfcf3e72a7896187f3d6fc0aeaa40bb50085fa9
                 </button>
               </p>
             </CardContent>
