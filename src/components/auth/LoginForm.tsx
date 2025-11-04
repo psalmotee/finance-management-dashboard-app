@@ -104,7 +104,7 @@ export default function LoginForm({ onLoginSuccess, onToggleSignup }: LoginFormP
                   </label>
                   <button
                     type="button"
-                    className="text-(--text-color-2) hover:text-(--text-color-1)"
+                    className="text-(--text-color-2) hover:text-(--text-color-1) cursor-pointer"
                   >
                     Forgot password
                   </button>
@@ -112,7 +112,7 @@ export default function LoginForm({ onLoginSuccess, onToggleSignup }: LoginFormP
                 <Button
                   type="submit"
                   disabled={loading}
-                  className="w-full h-11"
+                  className="w-full h-11 bg-(--primary-color) hover:bg-(--primary-color)/90 font-semibold"
                 >
                   {loading ? "Signing in..." : "Sign in"}
                 </Button>
@@ -124,13 +124,9 @@ export default function LoginForm({ onLoginSuccess, onToggleSignup }: LoginFormP
                   className="text-(--text-color-1) hover:text-(--text-color-1)/80 cursor-pointer font-semibold"
                 >
                   Sign up for free
-<<<<<<< HEAD
                   <span>
                     <Image src={curveLine} alt="curve line" />
                   </span>
-=======
-                  <span><Image src={curveLine} alt="curve line" /></span>
->>>>>>> 1dfcf3e72a7896187f3d6fc0aeaa40bb50085fa9
                 </button>
               </p>
             </CardContent>

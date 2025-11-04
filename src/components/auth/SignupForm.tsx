@@ -118,12 +118,12 @@ export default function SignupForm({
                 <Button
                   type="submit"
                   disabled={loading}
-                  className="w-full font-semibold h-11"
+                  className="w-full font-semibold h-11 bg-(--primary-color) hover:bg-(--primary-color)/90 text-(--text-color-1)"
                 >
                   {loading ? "Creating account..." : "Create Account"}
                 </Button>
               </form>
-              <p className="text-center text-smtext-sm text-(--text-secondary) mt-6">
+              <p className="text-center text-(--text-secondary) mt-6">
                 Already have an account?{" "}
                 <button
                   onClick={onToggleLogin}
