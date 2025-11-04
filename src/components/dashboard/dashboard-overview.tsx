@@ -122,12 +122,11 @@ export function DashboardOverview({ currentUser }: DashboardOverviewProps) {
 
       {/* Charts */}
       <div className="mt-12">
-        {/* Working Capital Chart - Takes 2 columns on large screens */}
         <div className="lg:col-span-2">
           <FinancialChart invoices={invoices} />
         </div>
 
-        {/* Recent Invoices - Takes 1 column on large screens */}
+        {/* Recent Invoices */}
         <div className="lg:col-span-1">
           <RecentInvoices invoices={invoices} />
         </div>

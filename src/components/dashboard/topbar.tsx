@@ -45,10 +45,6 @@ export default function Topbar({ currentUser, activeTab }: TopbarProps) {
             </span>
             <ChevronDown size={16} className="text-(--text-color-1) mr-1" />
           </div>
-
-          <div className="md:hidden">
-            <ThemeToggle />
-          </div>
         </div>
       </div>
     </header>

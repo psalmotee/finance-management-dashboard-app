@@ -66,7 +66,6 @@ export default function RecentInvoices({
     }
   };
 
-  // 🧠 Only show the 5 most recent invoices
   const recentInvoices = invoices.slice(0, 5);
 
   return (

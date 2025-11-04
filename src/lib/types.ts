@@ -1,6 +1,6 @@
 export interface Invoice {
-  $id?: string; // from Appwrite
-  id?: string; // used locally
+  $id?: string; 
+  id?: string; 
   clientName: string;
   clientEmail: string;
   amount: number;

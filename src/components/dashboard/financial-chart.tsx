@@ -112,7 +112,6 @@ export default function FinancialChart() {
 
     loadInvoices();
 
-    // 🔄 Real-time subscription
     const unsubscribe = realtime.subscribe(
       `databases.${process.env.NEXT_PUBLIC_APPWRITE_DB_ID}.collections.${
         process.env.NEXT_PUBLIC_APPWRITE_INVOICES_COLLECTION_ID
@@ -188,7 +187,6 @@ export default function FinancialChart() {
             >
               Last 7 days <ChevronDown size={14} className="ml-2" />
             </Button>
-            {/* You can extend this button to a dropdown for different ranges */}
           </div>
         </div>
       </div>
