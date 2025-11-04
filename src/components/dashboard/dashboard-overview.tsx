@@ -5,8 +5,8 @@ import FinancialChart from "@/components/dashboard/financial-chart";
 import RecentInvoices from "@/components/dashboard/recent-invoices";
 import { Wallet, WalletMinimal } from "lucide-react";
 import type { Invoice } from "@/lib/types";
-import { client, databases } from "@/lib/appwrite";
-import { Query } from "appwrite";
+import { invoiceService } from "@/lib/auth-service";
+import { realtime } from "@/lib/appwrite";
 
 interface DashboardOverviewProps {
   currentUser: string;
@@ -16,97 +16,68 @@ export function DashboardOverview({ currentUser }: DashboardOverviewProps) {
   const [invoices, setInvoices] = useState<Invoice[]>([]);
   const [loading, setLoading] = useState(true);
 
-  //  Fetch initial invoices
+  // 🔹 Fetch invoices from Appwrite
+  const fetchInvoices = async () => {
+    try {
+      const data = await invoiceService.getAllInvoices();
+      setInvoices(data);
+    } catch (error) {
+      console.error("Error loading invoices:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
-    const fetchInvoices = async () => {
-      try {
-        const res = await databases.listDocuments(
-          process.env.NEXT_PUBLIC_APPWRITE_DB_ID!,
-          process.env.NEXT_PUBLIC_APPWRITE_INVOICES_COLLECTION_ID!,
-          [Query.equal("userId", currentUser)]
-        );
-
-        const fetched = res.documents.map((doc: any) => ({
-          id: doc.$id,
-          clientName: doc.clientName,
-          status: doc.status,
-          amount: Number(doc.amount),
-          vatAmount: Number(doc.vatAmount) || 0,
-          dueDate: doc.dueDate,
-        }));
-
-        setInvoices(fetched);
-      } catch (err) {
-        console.error("Failed to load invoices:", err);
-      } finally {
-        setLoading(false);
-      }
-    };
-
     fetchInvoices();
 
-    const subscription = client.subscribe(
-      `databases.${process.env.NEXT_PUBLIC_APPWRITE_DB_ID}.collections.${process.env.NEXT_PUBLIC_APPWRITE_INVOICES_COLLECTION_ID}.documents`,
-      (response) => {
-        if (!response.events) return;
+    let subscription: any = null;
+    let mounted = true;
 
-        const { events, payload } = response;
-
-        setInvoices((prev) => {
-          // Handle create
-          if (events.some((e) => e.includes("create"))) {
-            return [
-              ...prev,
-              {
-                id: payload.$id,
-                clientName: payload.clientName,
-                status: payload.status,
-                amount: Number(payload.amount),
-                vatAmount: Number(payload.vatAmount) || 0,
-                dueDate: payload.dueDate,
-              },
-            ];
+    const setupRealtime = async () => {
+      try {
+        const sub = await realtime.subscribe(
+          `databases.${process.env.NEXT_PUBLIC_APPWRITE_DB_ID}.collections.${process.env.NEXT_PUBLIC_APPWRITE_INVOICES_COLLECTION_ID}.documents`,
+          (response: any) => {
+            if (["create", "update", "delete"].includes(response.events[0])) {
+              fetchInvoices();
+            }
           }
+        );
 
-          // Handle update
-          if (events.some((e) => e.includes("update"))) {
-            return prev.map((inv) =>
-              inv.id === payload.$id
-                ? {
-                    ...inv,
-                    clientName: payload.clientName,
-                    status: payload.status,
-                    amount: Number(payload.amount),
-                    vatAmount: Number(payload.vatAmount) || 0,
-                    dueDate: payload.dueDate,
-                  }
-                : inv
-            );
+        if (!mounted) {
+          // if component unmounted before subscription resolved, unsubscribe immediately
+          if (sub && typeof sub.unsubscribe === "function") {
+            sub.unsubscribe();
           }
+          return;
+        }
 
-          // Handle delete
-          if (events.some((e) => e.includes("delete"))) {
-            return prev.filter((inv) => inv.id !== payload.$id);
-          }
-
-          return prev;
-        });
+        subscription = sub;
+      } catch (err) {
+        console.error("Realtime subscription error:", err);
       }
-    );
+    };
+
+    setupRealtime();
 
     return () => {
-      if (subscription) subscription();
+      mounted = false;
+      if (subscription && typeof subscription.unsubscribe === "function") {
+        subscription.unsubscribe();
+      }
     };
   }, [currentUser]);
+  if (loading) {
+    return <p className="text-center text-gray-500">Loading dashboard...</p>;
+  }
 
-  if (loading) return <p className="text-center py-8">Loading dashboard...</p>;
-
+  const totalInvoices = invoices.length;
   const paidInvoices = invoices.filter((inv) => inv.status === "paid");
   const unpaidInvoices = invoices.filter((inv) => inv.status === "unpaid");
 
   const totalAmount = invoices.reduce((sum, inv) => sum + inv.amount, 0);
   const totalPaid = paidInvoices.reduce((sum, inv) => sum + inv.amount, 0);
-  const totalVAT = paidInvoices.reduce((sum, inv) => sum + inv.vatAmount, 0);
   const pendingAmount = unpaidInvoices.reduce(
     (sum, inv) => sum + inv.amount,
     0
@@ -185,8 +156,6 @@ export function DashboardOverview({ currentUser }: DashboardOverviewProps) {
         <div className="lg:col-span-2">
           <FinancialChart invoices={invoices} />
         </div>
-
-        {/* Recent Invoices */}
         <div className="lg:col-span-1">
           <RecentInvoices invoices={invoices} />
         </div>

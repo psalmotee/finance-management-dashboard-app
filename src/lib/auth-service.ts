@@ -63,12 +63,17 @@ export const invoiceService = {
     invoice: Omit<Invoice, "id" | "createdAt" | "updatedAt">
   ) {
     try {
+      //  Get the currently logged-in user
+      const user = await account.get();
+
+      // Create document with required userId field
       const response = await databases.createDocument(
         APPWRITE_DB_ID,
         APPWRITE_INVOICES_COLLECTION_ID,
         ID.unique(),
         {
           ...invoice,
+          userId: user.$id,
           amount: parseFloat(invoice.amount as unknown as string),
           vatPercentage: parseFloat(invoice.vatPercentage as unknown as string),
           vatAmount: parseFloat(invoice.vatAmount as unknown as string),
@@ -77,6 +82,7 @@ export const invoiceService = {
           updatedAt: new Date().toISOString(),
         }
       );
+
       return response as Invoice;
     } catch (error) {
       if (error instanceof AppwriteException) throw new Error(error.message);
