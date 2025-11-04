@@ -121,10 +121,10 @@ export default function LoginForm({ onLoginSuccess, onToggleSignup }: LoginFormP
                 Don&apos;t have an account?{" "}
                 <button
                   onClick={onToggleSignup}
-                  className="text-(--primary-fg) font-semibold"
+                  className="text-(--text-color-1) hover:text-(--text-color-1)/80 cursor-pointer font-semibold"
                 >
                   Sign up for free
-                  <span><Image src={curveLine} alt="Clock and hand" /></span>
+                  <span><Image src={curveLine} alt="curve line" /></span>
                 </button>
               </p>
             </CardContent>
