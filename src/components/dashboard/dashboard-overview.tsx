@@ -1,10 +1,12 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import  FinancialChart  from "@/components/dashboard/financial-chart";
-import  RecentInvoices  from "@/components/dashboard/recent-invoices";
+import FinancialChart from "@/components/dashboard/financial-chart";
+import RecentInvoices from "@/components/dashboard/recent-invoices";
 import { Wallet, WalletMinimal } from "lucide-react";
 import type { Invoice } from "@/lib/types";
+import { client, databases } from "@/lib/appwrite";
+import { Query } from "appwrite";
 
 interface DashboardOverviewProps {
   currentUser: string;
@@ -12,15 +14,93 @@ interface DashboardOverviewProps {
 
 export function DashboardOverview({ currentUser }: DashboardOverviewProps) {
   const [invoices, setInvoices] = useState<Invoice[]>([]);
+  const [loading, setLoading] = useState(true);
 
+  //  Fetch initial invoices
   useEffect(() => {
-    const stored = localStorage.getItem(`invoices_${currentUser}`);
-    if (stored) {
-      setInvoices(JSON.parse(stored));
-    }
+    const fetchInvoices = async () => {
+      try {
+        const res = await databases.listDocuments(
+          process.env.NEXT_PUBLIC_APPWRITE_DB_ID!,
+          process.env.NEXT_PUBLIC_APPWRITE_INVOICES_COLLECTION_ID!,
+          [Query.equal("userId", currentUser)]
+        );
+
+        const fetched = res.documents.map((doc: any) => ({
+          id: doc.$id,
+          clientName: doc.clientName,
+          status: doc.status,
+          amount: Number(doc.amount),
+          vatAmount: Number(doc.vatAmount) || 0,
+          dueDate: doc.dueDate,
+        }));
+
+        setInvoices(fetched);
+      } catch (err) {
+        console.error("Failed to load invoices:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchInvoices();
+
+    const subscription = client.subscribe(
+      `databases.${process.env.NEXT_PUBLIC_APPWRITE_DB_ID}.collections.${process.env.NEXT_PUBLIC_APPWRITE_INVOICES_COLLECTION_ID}.documents`,
+      (response) => {
+        if (!response.events) return;
+
+        const { events, payload } = response;
+
+        setInvoices((prev) => {
+          // Handle create
+          if (events.some((e) => e.includes("create"))) {
+            return [
+              ...prev,
+              {
+                id: payload.$id,
+                clientName: payload.clientName,
+                status: payload.status,
+                amount: Number(payload.amount),
+                vatAmount: Number(payload.vatAmount) || 0,
+                dueDate: payload.dueDate,
+              },
+            ];
+          }
+
+          // Handle update
+          if (events.some((e) => e.includes("update"))) {
+            return prev.map((inv) =>
+              inv.id === payload.$id
+                ? {
+                    ...inv,
+                    clientName: payload.clientName,
+                    status: payload.status,
+                    amount: Number(payload.amount),
+                    vatAmount: Number(payload.vatAmount) || 0,
+                    dueDate: payload.dueDate,
+                  }
+                : inv
+            );
+          }
+
+          // Handle delete
+          if (events.some((e) => e.includes("delete"))) {
+            return prev.filter((inv) => inv.id !== payload.$id);
+          }
+
+          return prev;
+        });
+      }
+    );
+
+    return () => {
+      if (subscription) subscription();
+    };
   }, [currentUser]);
 
-  const totalInvoices = invoices.length;
+  if (loading) return <p className="text-center py-8">Loading dashboard...</p>;
+
   const paidInvoices = invoices.filter((inv) => inv.status === "paid");
   const unpaidInvoices = invoices.filter((inv) => inv.status === "unpaid");
 
@@ -31,20 +111,6 @@ export function DashboardOverview({ currentUser }: DashboardOverviewProps) {
     (sum, inv) => sum + inv.amount,
     0
   );
-
-  const today = new Date();
-  const upcomingDue = unpaidInvoices.filter((inv) => {
-    const dueDate = new Date(inv.dueDate);
-    return (
-      dueDate > today &&
-      dueDate <= new Date(today.getTime() + 7 * 24 * 60 * 60 * 1000)
-    );
-  });
-
-  const overdue = unpaidInvoices.filter((inv) => {
-    const dueDate = new Date(inv.dueDate);
-    return dueDate < today;
-  });
 
   const metrics = [
     {
@@ -96,13 +162,7 @@ export function DashboardOverview({ currentUser }: DashboardOverviewProps) {
                 <Icon size={16} />
               </div>
               <div>
-                <p
-                  className={`text-sm font-medium mb-1 ${
-                    metric.isDark
-                      ? "text-(--text-color-2)"
-                      : "text-(--text-color-2)"
-                  }`}
-                >
+                <p className="text-sm font-medium mb-1 text-(--text-color-2)">
                   {metric.title}
                 </p>
                 <h3
