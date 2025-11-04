@@ -14,7 +14,6 @@ import { Button } from "@/components/ui/button";
 import { ChevronDown } from "lucide-react";
 import { databases, realtime } from "@/lib/appwrite";
 
-
 interface Invoice {
   $id?: string;
   total: number;
@@ -94,6 +93,7 @@ export default function FinancialChart() {
   const TEXT = "var(--text-color-2)";
   const BORDER = "var(--gray-2)";
 
+  // 🔄 Load invoices and realtime subscription
   useEffect(() => {
     const loadInvoices = async () => {
       try {
@@ -101,7 +101,6 @@ export default function FinancialChart() {
           process.env.NEXT_PUBLIC_APPWRITE_DB_ID!,
           process.env.NEXT_PUBLIC_APPWRITE_INVOICES_COLLECTION_ID!
         );
-
         setInvoices(response.documents as unknown as Invoice[]);
       } catch (error) {
         console.error("Error fetching invoices:", error);
@@ -109,13 +108,11 @@ export default function FinancialChart() {
         setLoading(false);
       }
     };
-
     loadInvoices();
 
+    // Realtime updates
     const unsubscribe = realtime.subscribe(
-      `databases.${process.env.NEXT_PUBLIC_APPWRITE_DB_ID}.collections.${
-        process.env.NEXT_PUBLIC_APPWRITE_INVOICES_COLLECTION_ID
-      }.documents`,
+      `databases.${process.env.NEXT_PUBLIC_APPWRITE_DB_ID}.collections.${process.env.NEXT_PUBLIC_APPWRITE_INVOICES_COLLECTION_ID}.documents`,
       (event) => {
         if (event.events.some((e) => e.includes("create"))) {
           setInvoices((prev) => [...prev, event.payload as Invoice]);
@@ -134,19 +131,24 @@ export default function FinancialChart() {
     );
 
     return () => {
-     
       if (typeof unsubscribe === "function") {
         unsubscribe();
-      } else if (unsubscribe && typeof (unsubscribe as any).unsubscribe === "function") {
+      } else if (
+        unsubscribe &&
+        typeof (unsubscribe as any).unsubscribe === "function"
+      ) {
         (unsubscribe as any).unsubscribe();
       }
     };
   }, []);
 
+  // 🔢 Memoized chart data
   const chartData = useMemo(
     () => processInvoicesForChart(invoices, 7),
     [invoices]
   );
+
+  // 🧮 Dynamic Y-axis range
   const maxTotal = useMemo(() => {
     let max = 10000;
     chartData.forEach((d) => {
@@ -154,6 +156,9 @@ export default function FinancialChart() {
     });
     return Math.ceil((max * 1.1) / 5000) * 5000;
   }, [chartData]);
+
+  // 🧠 Key trick: force LineChart re-render on data change
+  const chartKey = useMemo(() => JSON.stringify(chartData), [chartData]);
 
   if (loading)
     return (
@@ -163,7 +168,7 @@ export default function FinancialChart() {
     );
 
   return (
-    <div className="p-6 ">
+    <div className="p-6">
       {/* Header */}
       <div className="pb-4 flex items-center justify-around">
         <h3 className="text-lg font-semibold text-(--text-color-1)">
@@ -180,20 +185,16 @@ export default function FinancialChart() {
               Expenses
             </span>
           </div>
-          <div>
-            <Button
-              className="h-10 rounded-lg border-none bg-(--gray-2) text-(--text-color-1) hover:bg-(--gray-5) text-xs"
-              
-            >
-              Last 7 days <ChevronDown size={14} className="ml-2" />
-            </Button>
-          </div>
+          <Button className="h-10 rounded-lg border-none bg-(--gray-2) text-(--text-color-1) hover:bg-(--gray-5) text-xs">
+            Last 7 days <ChevronDown size={14} className="ml-2" />
+          </Button>
         </div>
       </div>
 
       <div className="h-72">
         <ResponsiveContainer width="100%" height="100%">
           <LineChart
+            key={chartKey} // ✅ Force grid + line re-render on update
             data={chartData}
             margin={{ top: 10, right: 0, left: -10, bottom: 0 }}
             onMouseMove={(state) =>
@@ -209,7 +210,9 @@ export default function FinancialChart() {
                 fill={HIGHLIGHT}
               />
             )}
-            <CartesianGrid vertical={true} stroke={BORDER} />
+            {/* ✅ Grid updates dynamically now */}
+            <CartesianGrid vertical stroke={BORDER} key={maxTotal} />
+
             <XAxis
               dataKey="date"
               axisLine={false}
@@ -225,6 +228,7 @@ export default function FinancialChart() {
               domain={[0, maxTotal]}
             />
             <Tooltip cursor={false} content={<CustomTooltip />} />
+
             <Line
               type="natural"
               dataKey="income"
