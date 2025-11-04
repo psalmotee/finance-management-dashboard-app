@@ -1,3 +1,4 @@
+// src/components/dashboard/sidebar-nav.tsx
 "use client";
 
 import { useState } from "react";
@@ -45,11 +46,7 @@ export function SidebarNavigation({
   const isMobile = useIsMobile();
 
   const navigationItems = [
-    {
-      id: "dashboard",
-      label: "Dashboard",
-      icon: <Home className="w-5 h-5" />,
-    },
+    { id: "dashboard", label: "Dashboard", icon: <Home className="w-5 h-5" /> },
     {
       id: "transactions",
       label: "Transactions",
@@ -73,99 +70,61 @@ export function SidebarNavigation({
     { id: "help", label: "Help", icon: <HelpCircle className="w-5 h-5" /> },
   ];
 
-  const handleNavClick = (
-    tab:
-      | "dashboard"
-      | "transactions"
-      | "invoices"
-      | "myWallet"
-      | "settings"
-      | "help"
-  ) => {
+  const handleNavClick = (tab: string) => {
     onTabChange(tab as any);
-    if (isMobile) {
-      setIsDrawerOpen(false);
-    }
+    if (isMobile) setIsDrawerOpen(false);
   };
 
-  // -----------------------------------------------------
-  // DESKTOP SIDEBAR STYLING
-  // -----------------------------------------------------
   const desktopSidebar = (
-    // Sidebar Container: White background, no vertical border (image shows subtle shadow/no strong border)
     <aside
       className="hidden md:flex flex-col w-64 bg-white dark:bg-[var(--background)] h-screen sticky top-0 border-r border-gray-100 dark:border-gray-800"
-      style={{ boxShadow: "2px 0 4px -2px rgba(0, 0, 0, 0.05)" }} // Subtle shadow matching design
+      style={{ boxShadow: "2px 0 4px -2px rgba(0, 0, 0, 0.05)" }}
     >
-      {/* Sidebar Header: Adjusted padding and removed bottom border to match image */}
       <div className="py-6 px-6 mb-6">
         <Image src={Logo} alt="Maglo Logo" width={90} height={30} />
       </div>
 
-      {/* Navigation Items */}
       <nav className="flex-1 p-4 pt-0 space-y-1">
-        {" "}
-        {/* Reduced top padding and space-y to match image */}
-        {navigationItems.slice(0, 5).map(
-          (
-            item // Only the main 5 tabs
-          ) => (
-            <button
-              key={item.id}
-              onClick={() => handleNavClick(item.id as any)}
-              className={`
-              w-full flex items-center gap-3 px-4 py-3 rounded-lg font-medium transition-colors 
-              ${
-                activeTab === item.id
-                  ? // ACTIVE TAB: Uses Primary Accent Color for BG and Primary Foreground for Text
-                    "bg-(--primary-color) text-(--text-color-1) font-semibold"
-                  : // INACTIVE TAB: Uses Secondary Text Color for a muted look
-                    "text-(--text-color-2) hover:bg-(--gray-5)"
-              }
-            `}
-            >
-              {/* The icon wrapping span might need to be adjusted if your SVG/Image components have inherent color/size */}
-              <span className="[&>img]:w-5 [&>img]:h-5">{item.icon}</span>
-              <span>{item.label}</span>
-            </button>
-          )
-        )}
+        {navigationItems.slice(0, 5).map((item) => (
+          <button
+            key={item.id}
+            onClick={() => handleNavClick(item.id)}
+            className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg font-medium transition-colors ${
+              activeTab === item.id
+                ? "bg-(--primary-color) text-(--text-color-1) font-semibold"
+                : "text-(--text-color-2) hover:bg-(--gray-5)"
+            }`}
+          >
+            <span className="[&>img]:w-5 [&>img]:h-5">{item.icon}</span>
+            <span>{item.label}</span>
+          </button>
+        ))}
       </nav>
 
-      {/* Sidebar Footer */}
-      {/* Separator line and lower navigation items */}
       <div className="py-4 space-y-1">
-        {navigationItems.slice(5).map(
-          (
-            item // Help item
-          ) => (
-            <button
-              key={item.id}
-              onClick={() => handleNavClick(item.id as any)}
-              className="w-full flex items-center gap-3 px-8 py-3 rounded-lg text-(--text-color-2) font-normal text-base hover:bg-(--gray-5) "
-            >
-              <span className="[&>img]:w-5 [&>img]:h-5">{item.icon}</span>
-              <span>{item.label}</span>
-            </button>
-          )
-        )}
+        {navigationItems.slice(5).map((item) => (
+          <button
+            key={item.id}
+            onClick={() => handleNavClick(item.id)}
+            className="w-full flex items-center gap-3 px-8 py-3 rounded-lg text-(--text-color-2) font-normal text-base hover:bg-(--gray-5)"
+          >
+            <span className="[&>img]:w-5 [&>img]:h-5">{item.icon}</span>
+            <span>{item.label}</span>
+          </button>
+        ))}
 
-        {/* Logout Button matching the image's text/icon style */}
         <button
           onClick={onLogout}
           className="w-full flex items-center gap-3 px-8 py-3 text-(--text-color-2) font-normal hover:bg-(--gray-5)"
         >
-          <span className="[&>img]:w-5 [&>img]:h-5">{/*  */}</span>
+          <span className="[&>img]:w-5 [&>img]:h-5"></span>
           <span>Logout</span>
         </button>
       </div>
     </aside>
   );
-  // -----------------------------------------------------
-  // MOBILE DRAWER STYLING (Left largely untouched for basic functionality)
-  // -----------------------------------------------------
+
   const mobileDrawer = (
-    // ... (Your original mobile drawer code goes here)
     <Drawer open={isDrawerOpen} onOpenChange={setIsDrawerOpen}>
       <DrawerTrigger asChild>
         <Button
@@ -177,6 +136,7 @@ export function SidebarNavigation({
           <span className="sr-only">Toggle navigation menu</span>
         </Button>
       </DrawerTrigger>
+
       <DrawerContent className="bg-white dark:bg-slate-950 border-t border-border dark:border-slate-800">
         <div className="flex flex-col h-auto py-6">
           <div className="px-6 pb-6 border-b border-border dark:border-slate-800">
@@ -190,11 +150,11 @@ export function SidebarNavigation({
             {navigationItems.map((item) => (
               <button
                 key={item.id}
-                onClick={() => handleNavClick(item.id as any)}
+                onClick={() => handleNavClick(item.id)}
                 className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
                   activeTab === item.id
-                    ? "bg-(--primary-bg) text-(--primary-fg)] font-semibold"
-                    : "text-(--text-primary)] "
+                    ? "bg-(--primary-bg) text-(--primary-fg) font-semibold"
+                    : "text-(--text-primary)"
                 }`}
               >
                 <span className="text-xl">{item.icon}</span>
@@ -204,18 +164,11 @@ export function SidebarNavigation({
           </nav>
 
           <div className="px-2 py-4 border-t border-border dark:border-slate-800 mt-auto space-y-2">
-            <Button
-              onClick={onLogout}
-              variant="outline"
-              className="w-full text-text-primary dark:text-slate-300 hover:bg-muted dark:hover:bg-slate-800 border-border dark:border-slate-700 bg-transparent"
-            >
+            <Button onClick={onLogout} variant="outline" className="w-full">
               Logout
             </Button>
             <DrawerClose asChild>
-              <Button
-                variant="outline"
-                className="w-full text-text-primary dark:text-slate-300 hover:bg-muted dark:hover:bg-slate-800 border-border dark:border-slate-700 bg-transparent"
-              >
+              <Button variant="outline" className="w-full">
                 Close
               </Button>
             </DrawerClose>
@@ -225,8 +178,13 @@ export function SidebarNavigation({
     </Drawer>
   );
 
-  return {
-    desktopSidebar,
-    mobileDrawer,
-  };
+  return (
+    <>
+      {/* Desktop sidebar */}
+      {desktopSidebar}
+
+      {/* Mobile trigger + drawer */}
+      <div className="md:hidden flex items-center">{mobileDrawer}</div>
+    </>
+  );
 }

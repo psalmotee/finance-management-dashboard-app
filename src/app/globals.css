@@ -7,7 +7,10 @@
   --primary-color: #c8ee44;
   --dark-shade: #1E1C30;
   --secondary-color: #29A073;
+  --secondary-light-color: #EEFEF2;
   --tertiary-color: #5243AA;
+  --badge-color: #2F80ED;
+
 
   /* Card invoice */
   --key-dark: #363A3F;
@@ -15,6 +18,7 @@
 
   --gray-2: #F8F8F8;
   --gray-3: #F5F5F5;
+  --gray-4: #FDFDFD;
   --gray-5: #EBE8E8;
 
   /* status */

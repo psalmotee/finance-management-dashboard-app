@@ -12,16 +12,17 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { BookText } from "lucide-react";
+import { invoiceService } from "@/lib/auth-service"; // your Appwrite service wrapper
 
 interface InvoiceFormProps {
-  onSubmit: (invoice: Omit<Invoice, "id">) => void;
+  onSuccess: () => void;
   initialData?: Invoice | null;
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }
 
-export function InvoiceForm({
-  onSubmit,
+export default function InvoiceForm({
+  onSuccess,
   initialData,
   open,
   onOpenChange,
@@ -62,19 +63,30 @@ export function InvoiceForm({
   const vatAmount = (formData.amount * formData.vatPercentage) / 100;
   const total = formData.amount + vatAmount;
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    onSubmit({
-      clientName: formData.clientName,
-      clientEmail: formData.clientEmail,
-      amount: formData.amount,
-      vatPercentage: formData.vatPercentage,
-      vatAmount,
-      total,
-      dueDate: formData.dueDate,
-      status: formData.status,
-    });
-    onOpenChange(false);
+
+    try {
+      if (isEditing && initialData?.id) {
+        await invoiceService.updateInvoice(initialData.id, {
+          ...formData,
+          vatAmount,
+          total,
+        });
+      } else {
+        await invoiceService.createInvoice({
+          ...formData,
+          vatAmount,
+          total,
+        });
+      }
+
+      onSuccess();
+      onOpenChange(false);
+    } catch (error: any) {
+      console.error("Invoice error:", error);
+      alert("Failed to save invoice: " + error.message);
+    }
   };
 
   return (
@@ -82,16 +94,14 @@ export function InvoiceForm({
       <DialogTrigger asChild>
         <Button
           className="bg-(--primary-color) hover:bg-(--primary-color)/90 text-(--text-color-1) font-semibold px-6 py-5"
-          onClick={() => {
-            onOpenChange(true);
-          }}
+          onClick={() => onOpenChange(true)}
         >
           <BookText size={14} className="mr-2" />
-          Create Invoice
+          {isEditing ? "Edit Invoice" : "Create Invoice"}
         </Button>
       </DialogTrigger>
 
-      <DialogContent className="max-w-2xl bg-slate-800 border-slate-700 overflow-y-auto max-h-[90vh]">
+      <DialogContent className="max-w-2xl bg-(--dark-2) border-(--key-dark) overflow-y-auto max-h-[90vh]">
         <DialogHeader>
           <DialogTitle className="text-white">
             {isEditing ? "Edit Invoice" : "Create New Invoice"}
@@ -99,7 +109,6 @@ export function InvoiceForm({
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="space-y-6">
-          {/* Client Name */}
           <div>
             <label className="text-sm text-gray-300">Client Name</label>
             <Input
@@ -113,7 +122,6 @@ export function InvoiceForm({
             />
           </div>
 
-          {/* Client Email */}
           <div>
             <label className="text-sm text-gray-300">Client Email</label>
             <Input
@@ -127,7 +135,6 @@ export function InvoiceForm({
             />
           </div>
 
-          {/* Amount */}
           <div>
             <label className="text-sm text-gray-300">Amount</label>
             <Input
@@ -144,7 +151,6 @@ export function InvoiceForm({
             />
           </div>
 
-          {/* VAT Percentage */}
           <div>
             <label className="text-sm text-gray-300">VAT (%)</label>
             <Input
@@ -160,7 +166,6 @@ export function InvoiceForm({
             />
           </div>
 
-          {/* Due Date */}
           <div>
             <label className="text-sm text-gray-300">Due Date</label>
             <Input
@@ -173,7 +178,6 @@ export function InvoiceForm({
             />
           </div>
 
-          {/* Summary */}
           <div className="flex justify-between text-gray-300">
             <p>VAT Amount: ₦{vatAmount.toFixed(2)}</p>
             <p className="font-semibold text-white">

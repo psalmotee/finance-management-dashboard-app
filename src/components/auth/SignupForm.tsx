@@ -22,14 +22,13 @@ interface SignupFormProps {
   onToggleLogin: () => void;
 }
 
-export function SignupForm({
+export default function SignupForm({
   onSignupSuccess,
   onToggleLogin,
 }: SignupFormProps) {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -39,13 +38,8 @@ export function SignupForm({
     setLoading(true);
 
     try {
-      if (!name || !email || !password || !confirmPassword) {
+      if (!name || !email || !password ) {
         setError("Please fill in all fields");
-        return;
-      }
-
-      if (password !== confirmPassword) {
-        setError("Passwords do not match");
         return;
       }
 

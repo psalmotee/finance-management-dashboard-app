@@ -1,10 +1,10 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { InvoiceForm } from "./invoice-form";
-import { InvoiceTable } from "./invoice-table";
+import InvoiceForm from "./invoice-form";
+import InvoiceTable from "./invoice-table";
 import type { Invoice } from "@/lib/types";
-import { Search, ListFilter } from "lucide-react";
+import { Search, ListFilter, Eye, Check } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -12,56 +12,28 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
+import { invoiceService } from "@/lib/auth-service"; // your Appwrite service wrapper
 
-interface InvoiceManagerProps {
-  currentUser: string;
-}
 
-export function InvoiceManager({ currentUser }: InvoiceManagerProps) {
+export default function InvoiceManager() {
   const [invoices, setInvoices] = useState<Invoice[]>([]);
   const [filter, setFilter] = useState<"all" | "paid" | "unpaid">("all");
   const [selectedInvoice, setSelectedInvoice] = useState<Invoice | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
-  // Load invoices from localStorage
+ const fetchInvoices = async () => {
+   try {
+     const data = await invoiceService.getAllInvoices(); 
+     setInvoices(data);
+   } catch (error: any) {
+     console.error("Fetch invoices failed:", error);
+   }
+ };
+
+
   useEffect(() => {
-    const stored = localStorage.getItem(`invoices_${currentUser}`);
-    if (stored) setInvoices(JSON.parse(stored));
-  }, [currentUser]);
-
-  // Save invoices to localStorage
-  const saveInvoices = (updated: Invoice[]) => {
-    localStorage.setItem(`invoices_${currentUser}`, JSON.stringify(updated));
-    setInvoices(updated);
-  };
-
-  // Handle create + edit together
-  const handleFormSubmit = (invoiceData: Omit<Invoice, "id">) => {
-    if (selectedInvoice) {
-      const updated = invoices.map((inv) =>
-        inv.id === selectedInvoice.id ? { ...inv, ...invoiceData } : inv
-      );
-      saveInvoices(updated);
-    } else {
-      const newInvoice: Invoice = { ...invoiceData, id: Date.now().toString() };
-      saveInvoices([...invoices, newInvoice]);
-    }
-    setSelectedInvoice(null);
-    setIsDialogOpen(false);
-  };
-
-  const handleDeleteInvoice = (id: string) => {
-    saveInvoices(invoices.filter((inv) => inv.id !== id));
-  };
-
-  const handleToggleStatus = (id: string) => {
-    const updated = invoices.map((inv) =>
-      inv.id === id
-        ? { ...inv, status: inv.status === "paid" ? "unpaid" : "paid" }
-        : inv
-    );
-    saveInvoices(updated);
-  };
+    fetchInvoices();
+  }, []);
 
   const filteredInvoices =
     filter === "all"
@@ -70,10 +42,9 @@ export function InvoiceManager({ currentUser }: InvoiceManagerProps) {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
       <div className="flex items-center justify-between">
-        <div className="flex items-center justify-center rounded-2xl py-1 px-2 bg-(--gray-2) text-(--text-color-1) text-md">
-          <Search size={18} className="ml-2 mr-2" />
+        <div className="flex items-center bg-(--gray-2) rounded-2xl gap-2 py-1 px-2">
+          <Search size={18} />
           <input
             className="border-none outline-none bg-(--gray-2) text-(--text-color-1) placeholder:text-(--text-color-2) py-1.5 rounded-md"
             type="text"
@@ -83,34 +54,45 @@ export function InvoiceManager({ currentUser }: InvoiceManagerProps) {
 
         <div className="flex gap-3">
           <InvoiceForm
-            onSubmit={handleFormSubmit}
             initialData={selectedInvoice}
             open={isDialogOpen}
             onOpenChange={(open) => {
               if (!open) setSelectedInvoice(null);
               setIsDialogOpen(open);
             }}
+            onSuccess={fetchInvoices}
           />
 
-          {/* Filter Dropdown (Replaces old filter buttons) */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button
-                variant="outline"
-                className="flex items-center gap-2 rounded-lg text-sm font-medium"
-              >
+              <Button className="flex items-center gap-2 h-10 border-none bg-(--gray-2) text-(--text-color-1) hover:bg-(--gray-5) cursor-pointer rounded-lg text-sm font-medium">
                 <ListFilter size={16} />
                 <span>Filter</span>
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuItem onClick={() => setFilter("all")}>
+            <DropdownMenuContent
+              align="end"
+              className="w-40 bg-white border border-gray-200 rounded-md shadow-lg overflow-hidden"
+            >
+              <DropdownMenuItem
+                onClick={() => setFilter("all")}
+                className="w-full px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 focus:bg-gray-100 transition-colors cursor-pointer"
+              >
+                  
                 All ({invoices.length})
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => setFilter("paid")}>
+
+              <DropdownMenuItem
+                onClick={() => setFilter("paid")}
+                className="w-full px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 focus:bg-gray-100 transition-colors cursor-pointer"
+              >
                 Paid ({invoices.filter((inv) => inv.status === "paid").length})
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => setFilter("unpaid")}>
+
+              <DropdownMenuItem
+                onClick={() => setFilter("unpaid")}
+                className="w-full px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 focus:bg-gray-100 transition-colors cursor-pointer"
+              >
                 Unpaid (
                 {invoices.filter((inv) => inv.status === "unpaid").length})
               </DropdownMenuItem>
@@ -119,15 +101,13 @@ export function InvoiceManager({ currentUser }: InvoiceManagerProps) {
         </div>
       </div>
 
-      {/* Table */}
       <InvoiceTable
         invoices={filteredInvoices}
-        onDelete={handleDeleteInvoice}
-        onToggleStatus={handleToggleStatus}
         onEdit={(invoice) => {
           setSelectedInvoice(invoice);
           setIsDialogOpen(true);
         }}
+        onSuccess={fetchInvoices}
       />
     </div>
   );

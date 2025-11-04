@@ -1,8 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { FinancialChart } from "./financial-chart";
-import { RecentInvoices } from "./recent-invoices";
+import  FinancialChart  from "@/components/dashboard/financial-chart";
+import  RecentInvoices  from "@/components/dashboard/recent-invoices";
 import { Wallet, WalletMinimal } from "lucide-react";
 import type { Invoice } from "@/lib/types";
 

@@ -22,7 +22,7 @@ interface LoginFormProps {
   onToggleSignup: () => void;
 }
 
-export function LoginForm({ onLoginSuccess, onToggleSignup }: LoginFormProps) {
+export default function LoginForm({ onLoginSuccess, onToggleSignup }: LoginFormProps) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");

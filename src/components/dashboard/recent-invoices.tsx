@@ -1,24 +1,61 @@
 "use client";
 
-import Link from "next/link";
+import { useState } from "react";
+import { Ellipsis, Eye, CircleCheckBig, Pencil, Trash2, ChevronRight } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import DeleteConfirmation from "./delete-confirmation";
+import { invoiceService } from "@/lib/auth-service";
 import type { Invoice } from "@/lib/types";
-import { ChevronRight } from "lucide-react";
+import Link from "next/link";
 
 interface RecentInvoicesProps {
   invoices: Invoice[];
+  onSuccess: () => void;
+  onEdit: (invoice: Invoice) => void;
 }
 
-export function RecentInvoices({ invoices }: RecentInvoicesProps) {
-  const recentInvoices = invoices.slice(-5).reverse();
+export default function RecentInvoices({ invoices,
+  onSuccess,
+  onEdit,
+}: InvoiceTableProps) {
+  const [selectedInvoice, setSelectedInvoice] = useState<Invoice | null>(null);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
 
+   const handleDelete = async (id: string) => {
+     try {
+       await invoiceService.deleteInvoice(id);
+       onSuccess();
+       setSelectedInvoice(null);
+     } catch (error: any) {
+       console.error("Delete error:", error);
+       alert("Failed to delete invoice: " + error.message);
+     }
+   };
   const getClientInitials = (name: string) => {
     return name
-      .split(" ")
+      ?.split(" ")
       .map((n) => n[0])
       .join("")
-      .toUpperCase()
-      .slice(0, 2);
+      .toUpperCase();
+  };
+
+  const toggleStatus = async (invoice: Invoice) => {
+    try {
+      await invoiceService.updateInvoice(invoice.id, {
+        status: invoice.status === "paid" ? "unpaid" : "paid",
+      });
+      onSuccess();
+    } catch (error: any) {
+      console.error("Toggle status error:", error);
+      alert("Failed to update status: " + error.message);
+    }
   };
 
   return (
@@ -28,122 +65,167 @@ export function RecentInvoices({ invoices }: RecentInvoicesProps) {
           Recent Invoice
         </h3>
         <Link
-          href="#invoice-manager"
+          href="./invoice-manager.tsx"
           className="flex items-center justify-center text-sm font-semibold text-(--secondary-color) hover:text-(--secondary-color)/80"
         >
           View All
           <ChevronRight className="ml-2" size={14} />
         </Link>
       </div>
-      <div className="mt-4">
-        <div className="overflow-x-auto">
-          <table className="w-full text-sm">
-            <thead>
-              <tr className="text-(--text-color-2)">
-                <th className="px-4 py-3 text-left text-xs font-semibold text-(--text-color-2) uppercase">
-                  Name/Client
-                </th>
-                <th className="px-4 py-3 text-left text-xs font-semibold text-(--text-color-2) uppercase">
-                  Date
-                </th>
-                <th className="px-4 py-3 text-left text-xs font-semibold text-(--text-color-2) uppercase">
-                  Orders/Type
-                </th>
-                <th className="px-4 py-3 text-left text-xs font-semibold text-(--text-color-2) uppercase">
-                  Amount
-                </th>
-                <th className="px-4 py-3 text-left text-xs font-semibold text-(--text-color-2) uppercase">
-                  Status
-                </th>
-                <th className="px-4 py-3 text-left text-xs font-semibold text-(--text-color-2) uppercase">
-                  Action
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {recentInvoices.length > 0 ? (
-                recentInvoices.map((invoice, index) => (
-                  <tr
-                    key={invoice.id}
-                    className="border-b border-(--gray-3) hover:bg-(--gray-5) rounded-2xl transition-colors"
-                  >
-                    <td className="px-4 py-4">
-                      <div className="flex items-center gap-3">
-                        <div
-                          className={`w-8 h-8 rounded-full bg-(--gray-5) flex items-center justify-center text-(--text-color-1) text-xs font-semibold`}
-                        >
-                          {getClientInitials(invoice.clientName)}
-                        </div>
-                        <div>
-                          <p className="text-(--text-color-1) font-medium">
-                            {invoice.clientName}
-                          </p>
-                          <p className="text-(--text-color-2) font-normal text-[13px]">
-                            No
-                          </p>
-                        </div>
-                      </div>
-                    </td>
-                    <td className="px-4 py-4 text-(--text-color-1) text-sm font-medium">
-                      <p>
-                        {new Date(invoice.dueDate).toLocaleDateString("en-NG", {
-                          month: "short",
-                          day: "numeric",
-                          year: "numeric",
-                        })}
+      <div className="overflow-x-auto">
+        <table className="w-full">
+          <thead>
+            <tr className="text-(--text-color-2) text-left">
+              <th className="text-(--text-color-2) px-6 py-4 font-medium text-sm">
+                Name/Client
+              </th>
+              <th className="px-6 py-4 font-medium text-sm">Date</th>
+              <th className="px-6 py-4 font-medium text-sm">Orders/Type</th>
+              <th className="px-6 py-4 font-medium text-sm">Amount</th>
+              <th className="px-6 py-4 font-medium text-sm">Status</th>
+              <th className="px-6 py-4 font-medium text-sm">Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            {invoices.map((invoice) => (
+              <tr
+                key={invoice.id}
+                className="hover:bg-(--gray-5) transition-colors"
+              >
+                {/* Client Info */}
+                <td className="text-(--text-color-1) px-6 py-4">
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 rounded-full bg-(--gray-5) flex items-center justify-center text-xs font-semibold">
+                      {getClientInitials(invoice.clientName)}
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium">
+                        {invoice.clientName}
                       </p>
-                      <span className="text-(--text-color-2) font-normal text-[13px]">
-                        at{}
-                      </span>
-                    </td>
-                    <td className="px-4 py-4 text-(--text-color-1) text-sm font-medium">
-                      20
-                    </td>
-                    <td className="px-4 py-4 text-slate-900 dark:text-white font-medium">
-                      ₦
-                      {invoice.amount.toLocaleString("en-NG", {
-                        minimumFractionDigits: 2,
+                      <p className="text-(13px)">Inv: {invoice.id}</p>
+                    </div>
+                  </div>
+                </td>
+
+                {/* Date */}
+                <td className="text-sm font-medium text-(--text-color-1) px-6 py-4">
+                  <div className="flex flex-col">
+                    <p>
+                      {new Date(invoice.dueDate).toLocaleDateString("en-NG")}
+                    </p>
+                    <p className="text-(--text-color-2) text-(13px) font-normal">
+                      at{" "}
+                      {new Date(invoice.dueDate).toLocaleTimeString("en-NG", {
+                        hour: "2-digit",
+                        minute: "2-digit",
                       })}
-                    </td>
-                    <td className="px-4 py-4">
-                      <Badge
-                        variant={
-                          invoice.status === "paid" ? "default" : "secondary"
-                        }
-                        className={`text-xs font-medium rounded-md px-3 py-1 ${
-                          invoice.status === "paid"
-                            ? "bg-(--paid-bg) text-(--paid-text)"
-                            : invoice.status === "pending"
-                            ? "bg-(--pending-bg) text-(--pending-text)"
-                            : "bg-(--unpaid-bg) text-(--unpaid-text)"
-                        }`}
-                      >
-                        {invoice.status === "paid" ? "Paid" : invoice.status === "pending" ? "Pending" : "Unpaid"}
-                      </Badge>
-                    </td>
-                    <td className="px-4 py-4">
-                      <div className="flex gap-0.5">
-                        <p className="w-1 h-1 rounded-full bg-(--secondary-color)"></p>
-                        <p className="w-1 h-1 rounded-full bg-(--secondary-color)"></p>
-                        <p className="w-1 h-1 rounded-full bg-(--secondary-color)"></p>
-                      </div>
-                    </td>
-                  </tr>
-                ))
-              ) : (
-                <tr>
-                  <td
-                    colSpan={6}
-                    className="px-4 py-8 text-center text-slate-500 dark:text-slate-400"
+                    </p>
+                  </div>
+                </td>
+
+                {/* Order Count */}
+                <td className="text-sm font-medium text-(--text-color-2) px-6 py-4">
+                  20
+                </td>
+
+                {/* Amount */}
+                <td className="text-sm font-medium text-(--text-color-1) px-6 py-4">
+                  ₦
+                  {invoice.amount.toLocaleString("en-NG", {
+                    minimumFractionDigits: 2,
+                  })}
+                </td>
+
+                {/* Status */}
+                <td className="text-sm font-medium text-(--text-color-1) px-6 py-4">
+                  <Badge
+                    variant="secondary"
+                    className={
+                      invoice.status === "paid"
+                        ? "bg-(--paid-bg) text-(--paid-text) px-4 py-1 rounded-md"
+                        : invoice.status === "pending"
+                        ? "bg-(--pending-bg) text-(--pending-text) px-4 py-1 rounded-md"
+                        : "bg-(--unpaid-bg) text-(--unpaid-text) px-4 py-1 rounded-md"
+                    }
                   >
-                    No invoices yet
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
+                    {invoice.status.charAt(0).toUpperCase() +
+                      invoice.status.slice(1)}
+                  </Badge>
+                </td>
+
+                {/* Actions */}
+                <td className="text-sm font-medium text-(--text-color-1) px-6 py-4">
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-8 w-8 p-0 hover:bg-(--gray-5)"
+                      >
+                        <Ellipsis color="var(--secondary-color)" size={20} />
+                      </Button>
+                    </DropdownMenuTrigger>
+
+                    <DropdownMenuContent
+                      align="end"
+                      className="w-44 bg-white border border-(--gray-5) rounded-md shadow-lg overflow-hidden"
+                    >
+                      <DropdownMenuItem
+                        onClick={() => {
+                          if (!invoice.id) return;
+                          window.location.href = `/invoice-details?id=${invoice.id}`;
+                        }}
+                        className="flex items-center gap-2 w-full px-3 py-2 text-sm text-(--pending-text) hover:bg-(--gray-5) cursor-pointer"
+                      >
+                        <Eye size={16} />
+                        View
+                      </DropdownMenuItem>
+
+                      <DropdownMenuItem
+                        onClick={() => toggleStatus(invoice)}
+                        className="flex items-center gap-2 w-full px-3 py-2 text-sm text-(--secondary-color) hover:bg-(--gray-5) cursor-pointer"
+                      >
+                        <CircleCheckBig size={16} />
+                        {invoice.status === "paid"
+                          ? "Mark as Unpaid"
+                          : "Mark as Paid"}
+                      </DropdownMenuItem>
+
+                      <DropdownMenuItem
+                        onClick={() => onEdit(invoice)}
+                        className="flex items-center gap-2 w-full px-3 py-2 text-sm text-(--badge-color) hover:bg-(--gray-5) cursor-pointer"
+                      >
+                        <Pencil size={16} />
+                        Edit
+                      </DropdownMenuItem>
+
+                      <DropdownMenuItem
+                        onClick={() => {
+                          setSelectedInvoice(invoice);
+                          setIsDeleteDialogOpen(true);
+                        }}
+                        className="flex items-center gap-2 w-full px-3 py-2 text-sm text-(--unpaid-text) hover:bg-(--unpaid-bg) cursor-pointer"
+                      >
+                        <Trash2 size={16} />
+                        Delete
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       </div>
+      {selectedInvoice && (
+              <DeleteConfirmation
+                open={isDeleteDialogOpen}
+                onOpenChange={setIsDeleteDialogOpen}
+                itemName={selectedInvoice.clientName}
+                onConfirm={() => handleDelete(selectedInvoice.id)}
+              />
+            )}
     </div>
+    
   );
 }
