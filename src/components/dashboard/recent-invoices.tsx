@@ -1,7 +1,14 @@
 "use client";
 
 import { useState } from "react";
-import { Ellipsis, Eye, CircleCheckBig, Pencil, Trash2, ChevronRight } from "lucide-react";
+import {
+  Ellipsis,
+  Eye,
+  CircleCheckBig,
+  Pencil,
+  Trash2,
+  ChevronRight,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -21,30 +28,31 @@ interface RecentInvoicesProps {
   onEdit: (invoice: Invoice) => void;
 }
 
-export default function RecentInvoices({ invoices,
+export default function RecentInvoices({
+  invoices,
   onSuccess,
   onEdit,
-}: InvoiceTableProps) {
+}: RecentInvoicesProps) {
   const [selectedInvoice, setSelectedInvoice] = useState<Invoice | null>(null);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
 
-   const handleDelete = async (id: string) => {
-     try {
-       await invoiceService.deleteInvoice(id);
-       onSuccess();
-       setSelectedInvoice(null);
-     } catch (error: any) {
-       console.error("Delete error:", error);
-       alert("Failed to delete invoice: " + error.message);
-     }
-   };
-  const getClientInitials = (name: string) => {
-    return name
+  const handleDelete = async (id: string) => {
+    try {
+      await invoiceService.deleteInvoice(id);
+      onSuccess();
+      setSelectedInvoice(null);
+    } catch (error: any) {
+      console.error("Delete error:", error);
+      alert("Failed to delete invoice: " + error.message);
+    }
+  };
+
+  const getClientInitials = (name: string) =>
+    name
       ?.split(" ")
       .map((n) => n[0])
       .join("")
       .toUpperCase();
-  };
 
   const toggleStatus = async (invoice: Invoice) => {
     try {
@@ -58,27 +66,29 @@ export default function RecentInvoices({ invoices,
     }
   };
 
+  // 🧠 Only show the 5 most recent invoices
+  const recentInvoices = invoices.slice(0, 5);
+
   return (
     <div className="mt-12">
       <div className="pb-4 flex flex-row items-center justify-between">
         <h3 className="text-lg font-semibold text-(--text-color-1)">
-          Recent Invoice
+          Recent Invoices
         </h3>
         <Link
-          href="./invoice-manager.tsx"
-          className="flex items-center justify-center text-sm font-semibold text-(--secondary-color) hover:text-(--secondary-color)/80"
+          href="/invoice-manager"
+          className="flex items-center text-sm font-semibold text-(--secondary-color) hover:text-(--secondary-color)/80"
         >
           View All
           <ChevronRight className="ml-2" size={14} />
         </Link>
       </div>
-      <div className="overflow-x-auto">
+
+      <div className="overflow-x-auto rounded-lg">
         <table className="w-full">
           <thead>
             <tr className="text-(--text-color-2) text-left">
-              <th className="text-(--text-color-2) px-6 py-4 font-medium text-sm">
-                Name/Client
-              </th>
+              <th className="px-6 py-4 font-medium text-sm">Name/Client</th>
               <th className="px-6 py-4 font-medium text-sm">Date</th>
               <th className="px-6 py-4 font-medium text-sm">Orders/Type</th>
               <th className="px-6 py-4 font-medium text-sm">Amount</th>
@@ -86,8 +96,9 @@ export default function RecentInvoices({ invoices,
               <th className="px-6 py-4 font-medium text-sm">Action</th>
             </tr>
           </thead>
+
           <tbody>
-            {invoices.map((invoice) => (
+            {recentInvoices.map((invoice) => (
               <tr
                 key={invoice.id}
                 className="hover:bg-(--gray-5) transition-colors"
@@ -102,7 +113,7 @@ export default function RecentInvoices({ invoices,
                       <p className="text-sm font-medium">
                         {invoice.clientName}
                       </p>
-                      <p className="text-(13px)">Inv: {invoice.id}</p>
+                      <p className="text-[13px]">Inv: {invoice.id}</p>
                     </div>
                   </div>
                 </td>
@@ -113,7 +124,7 @@ export default function RecentInvoices({ invoices,
                     <p>
                       {new Date(invoice.dueDate).toLocaleDateString("en-NG")}
                     </p>
-                    <p className="text-(--text-color-2) text-(13px) font-normal">
+                    <p className="text-(--text-color-2) text-[13px] font-normal">
                       at{" "}
                       {new Date(invoice.dueDate).toLocaleTimeString("en-NG", {
                         hour: "2-digit",
@@ -175,15 +186,14 @@ export default function RecentInvoices({ invoices,
                           if (!invoice.id) return;
                           window.location.href = `/invoice-details?id=${invoice.id}`;
                         }}
-                        className="flex items-center gap-2 w-full px-3 py-2 text-sm text-(--pending-text) hover:bg-(--gray-5) cursor-pointer"
+                        className="flex items-center gap-2 px-3 py-2 text-sm text-(--pending-text) hover:bg-(--gray-5)"
                       >
-                        <Eye size={16} />
-                        View
+                        <Eye size={16} /> View
                       </DropdownMenuItem>
 
                       <DropdownMenuItem
                         onClick={() => toggleStatus(invoice)}
-                        className="flex items-center gap-2 w-full px-3 py-2 text-sm text-(--secondary-color) hover:bg-(--gray-5) cursor-pointer"
+                        className="flex items-center gap-2 px-3 py-2 text-sm text-(--secondary-color) hover:bg-(--gray-5)"
                       >
                         <CircleCheckBig size={16} />
                         {invoice.status === "paid"
@@ -193,10 +203,9 @@ export default function RecentInvoices({ invoices,
 
                       <DropdownMenuItem
                         onClick={() => onEdit(invoice)}
-                        className="flex items-center gap-2 w-full px-3 py-2 text-sm text-(--badge-color) hover:bg-(--gray-5) cursor-pointer"
+                        className="flex items-center gap-2 px-3 py-2 text-sm text-(--badge-color) hover:bg-(--gray-5)"
                       >
-                        <Pencil size={16} />
-                        Edit
+                        <Pencil size={16} /> Edit
                       </DropdownMenuItem>
 
                       <DropdownMenuItem
@@ -204,10 +213,9 @@ export default function RecentInvoices({ invoices,
                           setSelectedInvoice(invoice);
                           setIsDeleteDialogOpen(true);
                         }}
-                        className="flex items-center gap-2 w-full px-3 py-2 text-sm text-(--unpaid-text) hover:bg-(--unpaid-bg) cursor-pointer"
+                        className="flex items-center gap-2 px-3 py-2 text-sm text-(--unpaid-text) hover:bg-(--unpaid-bg)"
                       >
-                        <Trash2 size={16} />
-                        Delete
+                        <Trash2 size={16} /> Delete
                       </DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>
@@ -217,15 +225,15 @@ export default function RecentInvoices({ invoices,
           </tbody>
         </table>
       </div>
+
       {selectedInvoice && (
-              <DeleteConfirmation
-                open={isDeleteDialogOpen}
-                onOpenChange={setIsDeleteDialogOpen}
-                itemName={selectedInvoice.clientName}
-                onConfirm={() => handleDelete(selectedInvoice.id)}
-              />
-            )}
+        <DeleteConfirmation
+          open={isDeleteDialogOpen}
+          onOpenChange={setIsDeleteDialogOpen}
+          itemName={selectedInvoice.clientName}
+          onConfirm={() => handleDelete(selectedInvoice.id)}
+        />
+      )}
     </div>
-    
   );
 }
