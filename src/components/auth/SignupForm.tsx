@@ -127,7 +127,7 @@ export default function SignupForm({
                 Already have an account?{" "}
                 <button
                   onClick={onToggleLogin}
-                  className="text-(--primary-fg) font-semibold"
+                  className="text-(--text-color-1) hover:text-(--text-color-1)/80 cursor-pointer font-semibold"
                 >
                   Sign in
                   <span>

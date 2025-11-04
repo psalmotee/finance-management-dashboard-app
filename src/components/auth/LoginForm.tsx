@@ -68,7 +68,7 @@ export default function LoginForm({ onLoginSuccess, onToggleSignup }: LoginFormP
             <CardContent>
               <form onSubmit={handleSubmit} className="space-y-4">
                 {error && (
-                  <div className="p-3 bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-500/20 rounded-lg text-red-700 dark:text-red-400 text-sm">
+                  <div className="p-3 bg-(--unpad-bg) border border-(--unpaid-bg)/80 rounded-lg text-(--unpaid-text) text-sm">
                     {error}
                   </div>
                 )}
@@ -98,13 +98,13 @@ export default function LoginForm({ onLoginSuccess, onToggleSignup }: LoginFormP
                       type="checkbox"
                       className="rounded border-(-text-secondary)"
                     />
-                    <span className="text-slate-700 dark:text-slate-400">
+                    <span className="text-(--text-color-2)">
                       Remember for 30 days
                     </span>
                   </label>
                   <button
                     type="button"
-                    className="text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
+                    className="text-(--text-color-2) hover:text-(--text-color-1)"
                   >
                     Forgot password
                   </button>
@@ -121,10 +121,12 @@ export default function LoginForm({ onLoginSuccess, onToggleSignup }: LoginFormP
                 Don&apos;t have an account?{" "}
                 <button
                   onClick={onToggleSignup}
-                  className="text-(--primary-fg) font-semibold"
+                  className="text-(--text-color-1) hover:text-(--text-color-1)/80 cursor-pointer font-semibold"
                 >
                   Sign up for free
-                  <span><Image src={curveLine} alt="Clock and hand" /></span>
+                  <span>
+                    <Image src={curveLine} alt="curve line" />
+                  </span>
                 </button>
               </p>
             </CardContent>
