@@ -15,13 +15,13 @@ export default function DashboardPage() {
       try {
         const user = await authService.getCurrentUser();
         if (!user) {
-          router.replace("/auth/login");
+          router.replace("/login");
           return;
         }
         setCurrentUser(user.name || user.email || "User");
       } catch (err) {
         console.error(err);
-        router.replace("/auth/login");
+        router.replace("/login");
       } finally {
         setLoading(false);
       }
@@ -47,7 +47,7 @@ export default function DashboardPage() {
       onLogout={async () => {
         try {
           await authService.logout();
-          router.replace("/auth/login");
+          router.replace("/login");
         } catch (e) {
           console.error("Logout failed", e);
         }

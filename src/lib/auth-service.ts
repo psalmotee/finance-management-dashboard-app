@@ -30,11 +30,19 @@ export const authService = {
     }
   },
 
-  async logout() {
+  logout: async () => {
     try {
+      const session = await account.getSession("current");
+      if (!session) return; 
       await account.deleteSession("current");
     } catch (error) {
-      if (error instanceof AppwriteException) throw new Error(error.message);
+      if (
+        error instanceof AppwriteException &&
+        error.message.includes("missing scopes")
+      ) {
+        console.warn("No active session to delete, skipping logout.");
+        return;
+      }
       throw error;
     }
   },
