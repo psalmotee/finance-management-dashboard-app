@@ -15,8 +15,8 @@ interface DeleteConfirmationProps {
   trigger?: React.ReactNode;
   title?: string;
   description?: string;
-  open?: boolean; // ✅ controlled prop
-  onOpenChange?: (open: boolean) => void; // ✅ controlled callback
+  open?: boolean; 
+  onOpenChange?: (open: boolean) => void; 
 }
 
 export default function DeleteConfirmation({

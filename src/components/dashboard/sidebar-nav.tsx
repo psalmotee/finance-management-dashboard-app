@@ -1,4 +1,3 @@
-// src/components/dashboard/sidebar-nav.tsx
 "use client";
 
 import { useState } from "react";
@@ -137,11 +136,11 @@ export function SidebarNavigation({
         </Button>
       </DrawerTrigger>
 
-      <DrawerContent className="bg-white dark:bg-slate-950 border-t border-border dark:border-slate-800">
+      <DrawerContent className="bg-white border-t border-border dark:border-slate-800">
         <div className="flex flex-col h-auto py-6">
-          <div className="px-6 pb-6 border-b border-border dark:border-slate-800">
+          <div className="px-6 pb-6 border-b border-border">
             <h2 className="text-xl font-bold text-primary">Maglo Finance</h2>
-            <p className="text-sm text-text-secondary dark:text-slate-400 mt-1">
+            <p className="text-sm text-text-secondary  mt-1">
               {currentUser}
             </p>
           </div>
@@ -163,7 +162,7 @@ export function SidebarNavigation({
             ))}
           </nav>
 
-          <div className="px-2 py-4 border-t border-border dark:border-slate-800 mt-auto space-y-2">
+          <div className="px-2 py-4 border-t border-border  mt-auto space-y-2">
             <Button onClick={onLogout} variant="outline" className="w-full">
               Logout
             </Button>

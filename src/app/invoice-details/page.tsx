@@ -7,6 +7,11 @@ import InvoiceDetails from "@/components/dashboard/Invoice-details";
 import { invoiceService } from "@/lib/auth-service";
 import type { Invoice } from "@/lib/types";
 
+interface InvoiceDetailsPageProps {
+  currentUser: string;
+  activeTab: string;
+}
+
 export default function InvoiceDetailsPage() {
   const [currentUser, setCurrentUser] = useState("John Doe");
   const [activeTab, setActiveTab] = useState("Invoices");
@@ -21,7 +26,7 @@ export default function InvoiceDetailsPage() {
         .getInvoiceById(id)
         .then((inv) => {
           setInvoice(inv);
-          setActiveTab(`New Invoice: ${inv.id}`); // <-- dynamically set activeTab
+          setActiveTab(`New Invoice: ${inv.id}`);
         })
         .catch(console.error);
     }
@@ -33,7 +38,7 @@ export default function InvoiceDetailsPage() {
     <div className="flex h-screen">
       <SidebarNavigation
         currentUser={currentUser}
-        activeTab={activeTab} // <-- pass dynamic activeTab
+        activeTab={activeTab} 
         onTabChange={setActiveTab}
         onLogout={handleLogout}
       />

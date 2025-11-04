@@ -12,7 +12,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { BookText } from "lucide-react";
-import { invoiceService } from "@/lib/auth-service"; // your Appwrite service wrapper
+import { invoiceService } from "@/lib/auth-service"; 
 
 interface InvoiceFormProps {
   onSuccess: () => void;

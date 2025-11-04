@@ -12,8 +12,6 @@ interface InvoiceDetailsProps {
   invoice: Invoice;
 }
 
-// Dummy data structure for the item rows to match the screenshot
-// Replace with actual data mapping from your 'invoice' object if needed.
 const dummyInvoiceItems: InvoiceItem[] = [
   {
     id: 1,
@@ -34,7 +32,6 @@ const dummyInvoiceItems: InvoiceItem[] = [
 export default function InvoiceDetails({ invoice }: InvoiceDetailsProps) {
   if (!invoice) return null;
 
-  // Static/dummy values from the screenshot for a perfect visual match
   const invoiceNumber = "MAG 254420";
   const issuedDate = "10 Apr 2022";
   const dueDate = "20 Apr 2022";
@@ -45,11 +42,10 @@ export default function InvoiceDetails({ invoice }: InvoiceDetailsProps) {
   const magloAddress1 = "1333 Grey Fox Farm Road";
   const magloAddress2 = "Houston, TX 77060";
   const magloAddress3 = "Bloomfield Hills, Michigan(MI), 48301";
-  const subtotal = 964.0; // 544.00 + 420.00
+  const subtotal = 964.0; 
   const total = 964.0;
   const invoiceDate = "14 Apr 2022"; // From Basic Info
 
-  // The main layout is a flex container with two primary columns
   return (
     <Card className="bg-(--gray-1) shadow-none border-none">
       <div className="flex-1 p-8 space-y-6 lg:flex lg:space-x-6 lg:space-y-0">
@@ -171,7 +167,7 @@ export default function InvoiceDetails({ invoice }: InvoiceDetailsProps) {
               {/* Use flex to position Add Item and Totals */}
               <Button
                 variant="ghost"
-                className="text-green-600 hover:text-green-700 px-0"
+                className="text-(--secondary-color) hover:text-(--secondary-color)/80 px-0"
               >
                 <Plus className="w-4 h-4 mr-1" />
                 Add Item
