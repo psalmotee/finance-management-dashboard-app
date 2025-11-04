@@ -3,7 +3,6 @@
 import { Bell, ChevronDown, Search } from "lucide-react";
 import Image from "next/image";
 import ProfilePic from "@/assets/images/profile-picture.png";
-import { ThemeToggle } from "@/components/theme-toggle";
 
 interface TopbarProps {
   currentUser: string;
